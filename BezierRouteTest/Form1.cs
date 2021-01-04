@@ -146,7 +146,7 @@ namespace UniformBezierTest
                 // DrawBezierCurve();
                 bezierRoute.Reverse();
                 bezierRoute.Tag = -bezierRoute.Tag;
-                //bezierRoute.Start = true;
+                bezierRoute.Start = true;
                 Console.WriteLine("Finished");
             }
 
