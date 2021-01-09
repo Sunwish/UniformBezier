@@ -4,6 +4,7 @@ using System.Windows.Forms;
 using UniformBezier.Route;
 using UniformBezier.Ease;
 using System.Threading;
+
 namespace UniformBezierTest
 {
     public partial class Form1 : Form
@@ -146,7 +147,14 @@ namespace UniformBezierTest
                 // DrawBezierCurve();
                 bezierRoute.Reverse();
                 bezierRoute.Tag = -bezierRoute.Tag;
-                bezierRoute.Start = true;
+
+                // bezierRoute.Start = true;
+                button1.BeginInvoke(new Action(() =>
+                {
+                    button1.Text = (string)button1.Tag;
+                    button4.Text = (string)button4.Tag;
+                }));
+
                 Console.WriteLine("Finished");
             }
 
@@ -184,29 +192,88 @@ namespace UniformBezierTest
         
         private void button1_Click(object sender, EventArgs e)
         {
-            // Stop ease bezier
-            bezierEase[0].Start = bezierEase[1].Start = bezierEase[2].Start = false;
-            timer1.Enabled = false;
+            if (!bezierRoute.Start)
+                // Start
+            {
+                // Stop ease bezier
+                bezierEase[0].Start = bezierEase[1].Start = bezierEase[2].Start = false;
+                timer1.Enabled = false;
 
-            // Start route bezier
-            g_curve.Clear(this.BackColor);
-            DrawBezierCurve();
-            bezierRoute.Start = true;
+                // Start route bezier
+                g_curve.Clear(this.BackColor);
+                DrawBezierCurve();
+                bezierRoute.Start = true;
+
+                // Change button text
+                button1.Text = "Pause";
+
+                // Reset other buttons' text
+                button2.Text = (string)button2.Tag;
+                button3.Text = (string)button3.Tag;
+                button4.Text = (string)button4.Tag;
+            }
+            else
+                // Pause or Continue
+            {
+                bezierRoute.Pause = !bezierRoute.Pause;
+
+                // Change button text
+                if (button1.Text.Equals("Pause"))
+                {
+                    button1.Text = "Continue";
+                }
+                else if (button1.Text.Equals("Continue"))
+                {
+                    button1.Text = "Pause";
+                }
+            }
+            
         }
 
         private void button2_Click(object sender, EventArgs e)
         {
-            // Stop route bezier
-            bezierRoute.Start = false;
+            if (!bezierEase[1].Start)
+                // Start ease
+            {
+                // Stop route bezier
+                bezierRoute.Start = false;
 
-            // Start ease bezier
-            DrawBezierCurve();
-            timer1.Enabled = true;
-            bezierEase[0].Start = true;
-            Thread.Sleep(150);
-            bezierEase[1].Start = true;
-            Thread.Sleep(150);
-            bezierEase[2].Start = true;
+                // Reset bezierEase status
+                bezierEase[0].Start = bezierEase[1].Start = bezierEase[2].Start = false;
+
+                // Start ease bezier
+                DrawBezierCurve();
+                timer1.Enabled = true;
+                bezierEase[0].Start = true;
+                Thread.Sleep(150);
+                bezierEase[1].Start = true;
+                Thread.Sleep(150);
+                bezierEase[2].Start = true;
+
+                // Change button text
+                button2.Text = "Pause";
+
+                // Reset other buttons' text
+                button1.Text = (string)button1.Tag;
+                button3.Text = (string)button3.Tag;
+                button4.Text = (string)button4.Tag;
+            }
+            else
+                // Pause or Continue
+            {
+                bezierEase[0].Pause = bezierEase[1].Pause = bezierEase[2].Pause = !bezierEase[0].Pause;
+
+                // Change button text
+                if (button2.Text.Equals("Pause"))
+                {
+                    button2.Text = "Continue";
+                }
+                else if (button2.Text.Equals("Continue"))
+                {
+                    button2.Text = "Pause";
+                }
+            }
+            
         }
 
         private void timer1_Tick(object sender, EventArgs e)
@@ -226,38 +293,98 @@ namespace UniformBezierTest
 
         private void button3_Click(object sender, EventArgs e)
         {
-            // Stop route bezier
-            bezierRoute.Start = false;
+            if (!bezierEase[0].Start || bezierEase[1].Start)
+                // Start ease
+            {
+                // Stop route bezier
+                bezierRoute.Start = false;
+                for (int i = 0; i < 3; i++)
+                {
+                    pE[i].X = (int)(orignPoints[i].X);
+                }
+                
+                // Stop ease bezier demo
+                bezierEase[0].Start = bezierEase[1].Start = bezierEase[2].Start = false;
+                timer1.Enabled = false;
 
-            // Stop ease bezier demo
-            bezierEase[0].Start = bezierEase[1].Start = bezierEase[2].Start = false;
-            timer1.Enabled = false;
+                // Start ease bezier
+                g_curve.Clear(this.BackColor);
+                DrawBezierCurve();
+                timer1.Enabled = true;
+                bezierEase[0].Start = true;
 
-            // Start ease bezier
-            g_curve.Clear(this.BackColor);
-            DrawBezierCurve();
-            timer1.Enabled = true;
-            bezierEase[0].Start = true;
+                // Change button text
+                button3.Text = "Pause";
+
+                // Reset other buttons' text
+                button1.Text = (string)button1.Tag;
+                button2.Text = (string)button2.Tag;
+                button4.Text = (string)button4.Tag;
+            }
+            else
+                // Pause or Continue
+            {
+                bezierEase[0].Pause = !bezierEase[0].Pause;
+
+                // Change button text
+                if (button3.Text.Equals("Pause"))
+                {
+                    button3.Text = "Continue";
+                }
+                else if (button3.Text.Equals("Continue"))
+                {
+                    button3.Text = "Pause";
+                }
+            }
+            
         }
 
         private void button4_Click(object sender, EventArgs e)
         {
-            // 临时测试区 Bezier ease route
-            Point[] tempRoutePoints = new Point[4];
-            tempRoutePoints[0] = new Point(10, 221);
-            tempRoutePoints[1] = new Point(211, 221);
-            tempRoutePoints[2] = new Point(311, 201);
-            tempRoutePoints[3] = new Point(311, 10);
-            Point[] tempEasePoints = new Point[4];
-            tempEasePoints[0] = new Point(10, 111);
-            tempEasePoints[1] = new Point(110, 21);
-            tempEasePoints[2] = new Point(21, 10);
-            tempEasePoints[3] = new Point(311, 10);
-            bezierRoute.RoutePoints = tempRoutePoints;
-            if (bezierRoute.Tag == -1) bezierRoute.Reverse();
-            bezierRoute.EnableEaseRoute(tempEasePoints);
-            bezierRoute.FullTime = 1800;
-            button1_Click(sender, e);
+            if (!bezierRoute.Start)
+                // Start route
+            {
+                // 临时测试区 Bezier ease route
+                Point[] tempRoutePoints = new Point[4];
+                tempRoutePoints[0] = new Point(10, 221);
+                tempRoutePoints[1] = new Point(211, 221);
+                tempRoutePoints[2] = new Point(311, 201);
+                tempRoutePoints[3] = new Point(311, 10);
+                Point[] tempEasePoints = new Point[4];
+                tempEasePoints[0] = new Point(10, 111);
+                tempEasePoints[1] = new Point(110, 21);
+                tempEasePoints[2] = new Point(21, 10);
+                tempEasePoints[3] = new Point(311, 10);
+                bezierRoute.RoutePoints = tempRoutePoints;
+                if (bezierRoute.Tag == -1) bezierRoute.Reverse();
+                bezierRoute.EnableEaseRoute(tempEasePoints);
+                bezierRoute.FullTime = 1800;
+                button1_Click(sender, e);
+
+                // Change button text
+                button4.Text = "Pause";
+
+                // Reset other buttons' text
+                button1.Text = (string)button1.Tag;
+                button2.Text = (string)button2.Tag;
+                button3.Text = (string)button3.Tag;
+            }
+            else
+                // Pause or Continue
+            {
+                bezierRoute.Pause = !bezierRoute.Pause;
+
+                // Change button text
+                if (button4.Text.Equals("Pause"))
+                {
+                    button4.Text = "Continue";
+                }
+                else if (button4.Text.Equals("Continue"))
+                {
+                    button4.Text = "Pause";
+                }
+            }
+            
         }
     }
 }

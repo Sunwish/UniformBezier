@@ -9,7 +9,6 @@ namespace UniformBezier.Route
         public enum BezierStatus
         {
             None, Motioning, Finished
-
         }
         /// <summary>
         /// 匀速化贝塞尔点回调委托
@@ -23,12 +22,12 @@ namespace UniformBezier.Route
         double length = 0;
         double fullTime = 0;
         double interval = 0;
-        double timeSum = 0;
+        // double timeSum = 0;
         Timer timer = null;
         bool start = false;
         Point realPoint;
         bool standardization = true;
-        TimeSpan timeSpanStart;
+        // TimeSpan timeSpanStart;
         int minX = int.MaxValue;
         int minY = int.MaxValue;
         bool enableEaseRoute = false;
@@ -36,6 +35,32 @@ namespace UniformBezier.Route
         // 由于使用二分求数据，因此可能出现 Finish 数据先算出并调用回调，而尚未 Finish 轮次的数据在 Finish 调用后才算出，又去调用回调，
         // 导致出现向使用者发出 Finish 回调之后仍发出残余回调的问题， 故在发出 Finish 轮回调后就将 banCall 置真，后续慢算出来的数据全部舍弃，不再回调给使用者
         bool banCall = true;
+        bool pause = false;
+
+        Coroutine coroutine = new Coroutine();
+
+        /// <summary>
+        /// 贝塞尔路径是否处于暂停状态
+        /// </summary>
+        public bool Pause
+        {
+            get { return pause; }
+            set
+            {
+                // 设为当前值不做处理
+                if (value == pause) return;
+
+                pause = value;
+                if (pause)
+                {
+                    coroutine.Pause();
+                }
+                else
+                {
+                    coroutine.Continue();
+                }
+            }
+        }
 
         /// <summary>
         /// 仅 EnableEaseRoute 时本参数有意义
@@ -181,7 +206,9 @@ namespace UniformBezier.Route
             set
             {
                 start = value;
-                timeSpanStart = DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0);
+                if (start) coroutine.Start();
+                else coroutine.Stop();
+                // timeSpanStart = DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0);
                 banCall = !value;
                 if (timer != null) timer.Enabled = start;
 
@@ -233,7 +260,7 @@ namespace UniformBezier.Route
         /// <summary>
         /// 运动进度归零
         /// </summary>
-        public void Reset() => timeSum = 0;
+        public void Reset() => coroutine.Stop(); // timeSum = 0;
 
         public void Reverse()
         {
@@ -249,7 +276,8 @@ namespace UniformBezier.Route
 
         private void Timer_Elapsed(object sender, ElapsedEventArgs e)
         {
-            timeSum = ((DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0)) - timeSpanStart).TotalMilliseconds;
+            // timeSum = ((DateTime.Now - new DateTime(1970, 1, 1, 0, 0, 0, 0)) - timeSpanStart).TotalMilliseconds;
+            double timeSum = coroutine.FullTime;
             if (timeSum <= fullTime)
             {
                 double timeRate = timeSum / fullTime;
@@ -262,14 +290,22 @@ namespace UniformBezier.Route
                 }
                 double rt = b3.t2rt_by_baze_length(points, length * timeRate);
                 realPoint = b3.b3_c(points, rt);
-                if(!banCall) CallBack.DynamicInvoke(this, realPoint, BezierStatus.Motioning);
+                if(!banCall && !pause) CallBack.DynamicInvoke(this, realPoint, BezierStatus.Motioning);
             }
             else
             {
+                // Reset to orignal status
                 timer.Enabled = false;
                 start = false;
-                if (!banCall) CallBack.DynamicInvoke(this, points[3], BezierStatus.Finished);
-                banCall = true;
+                coroutine.Stop();
+
+                // Set banCall true if banCall is false, so the later bezier calculation result
+                // won't invoke CallBack fuction after a Finished status CallBack is invoked
+                if (!banCall && !pause)
+                {
+                    banCall = true;
+                    CallBack.DynamicInvoke(this, points[3], BezierStatus.Finished);
+                }
             }
         }
     }

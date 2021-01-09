@@ -30,12 +30,12 @@
         {
             this.components = new System.ComponentModel.Container();
             this.panel1 = new System.Windows.Forms.Panel();
+            this.button4 = new System.Windows.Forms.Button();
+            this.button3 = new System.Windows.Forms.Button();
             this.button2 = new System.Windows.Forms.Button();
             this.button1 = new System.Windows.Forms.Button();
             this.panel2 = new System.Windows.Forms.Panel();
             this.timer1 = new System.Windows.Forms.Timer(this.components);
-            this.button3 = new System.Windows.Forms.Button();
-            this.button4 = new System.Windows.Forms.Button();
             this.panel1.SuspendLayout();
             this.SuspendLayout();
             // 
@@ -52,6 +52,30 @@
             this.panel1.Size = new System.Drawing.Size(361, 247);
             this.panel1.TabIndex = 1;
             // 
+            // button4
+            // 
+            this.button4.Location = new System.Drawing.Point(192, 164);
+            this.button4.Name = "button4";
+            this.button4.Size = new System.Drawing.Size(159, 33);
+            this.button4.TabIndex = 3;
+            this.button4.TabStop = false;
+            this.button4.Tag = "Bezier ease route";
+            this.button4.Text = "Bezier ease route";
+            this.button4.UseVisualStyleBackColor = true;
+            this.button4.Click += new System.EventHandler(this.button4_Click);
+            // 
+            // button3
+            // 
+            this.button3.Location = new System.Drawing.Point(152, 203);
+            this.button3.Name = "button3";
+            this.button3.Size = new System.Drawing.Size(104, 33);
+            this.button3.TabIndex = 3;
+            this.button3.TabStop = false;
+            this.button3.Tag = "BezierEase";
+            this.button3.Text = "BezierEase";
+            this.button3.UseVisualStyleBackColor = true;
+            this.button3.Click += new System.EventHandler(this.button3_Click);
+            // 
             // button2
             // 
             this.button2.Location = new System.Drawing.Point(263, 203);
@@ -59,6 +83,7 @@
             this.button2.Size = new System.Drawing.Size(88, 33);
             this.button2.TabIndex = 2;
             this.button2.TabStop = false;
+            this.button2.Tag = "EaseDemo";
             this.button2.Text = "EaseDemo";
             this.button2.UseVisualStyleBackColor = true;
             this.button2.Click += new System.EventHandler(this.button2_Click);
@@ -70,6 +95,7 @@
             this.button1.Size = new System.Drawing.Size(113, 33);
             this.button1.TabIndex = 1;
             this.button1.TabStop = false;
+            this.button1.Tag = "BezierRoute";
             this.button1.Text = "BezierRoute";
             this.button1.UseVisualStyleBackColor = true;
             this.button1.Click += new System.EventHandler(this.button1_Click);
@@ -86,28 +112,6 @@
             // 
             this.timer1.Interval = 1;
             this.timer1.Tick += new System.EventHandler(this.timer1_Tick);
-            // 
-            // button3
-            // 
-            this.button3.Location = new System.Drawing.Point(152, 203);
-            this.button3.Name = "button3";
-            this.button3.Size = new System.Drawing.Size(104, 33);
-            this.button3.TabIndex = 3;
-            this.button3.TabStop = false;
-            this.button3.Text = "BezierEase";
-            this.button3.UseVisualStyleBackColor = true;
-            this.button3.Click += new System.EventHandler(this.button3_Click);
-            // 
-            // button4
-            // 
-            this.button4.Location = new System.Drawing.Point(192, 164);
-            this.button4.Name = "button4";
-            this.button4.Size = new System.Drawing.Size(159, 33);
-            this.button4.TabIndex = 3;
-            this.button4.TabStop = false;
-            this.button4.Text = "Bezier ease route";
-            this.button4.UseVisualStyleBackColor = true;
-            this.button4.Click += new System.EventHandler(this.button4_Click);
             // 
             // Form1
             // 
